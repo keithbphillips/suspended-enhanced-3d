@@ -1,0 +1,23 @@
+{
+  "name": "zmachine-web-player",
+  "version": "1.0.0",
+  "description": "Web interface for playing Infocom Z-machine games through Frotz",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "build": "cd frotz-js && npm run pretest"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "keywords": [
+    "frotz",
+    "zmachine",
+    "infocom",
+    "text-adventure",
+    "web"
+  ],
+  "author": "Claude Code",
+  "license": "GPL-3.0"
+}

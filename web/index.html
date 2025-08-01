@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suspended - Enhanced 3D Edition</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #000;
+            color: #00ff00;
+            margin: 0;
+            padding: 0;
+            line-height: 1.4;
+            overflow: hidden;
+        }
+
+        .main-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .text-panel {
+            width: 40%;
+            background-color: #000;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .graphics-panel {
+            width: 60%;
+            background-color: #111;
+            position: relative;
+        }
+
+        #threejs-container {
+            width: 100%;
+            height: 100%;
+        }
+
+        .robot-info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #00ff00;
+            padding: 10px;
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+
+        .minimap {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 300px;
+            height: 250px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00ff00;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .minimap-header {
+            background: rgba(0, 255, 0, 0.2);
+            color: #00ff00;
+            padding: 5px 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            font-weight: bold;
+            border-bottom: 1px solid #00ff00;
+        }
+
+        .minimap-canvas {
+            width: 100%;
+            height: calc(100% - 25px);
+            display: block;
+        }
+
+        .container {
+            max-width: none;
+            margin: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1 {
+            text-align: center;
+            color: #00ff00;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .game-controls {
+            margin-bottom: 15px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .game-title {
+            color: #888;
+            font-size: 12px;
+        }
+
+        .robot-selector {
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        select {
+            background-color: #111;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 5px 10px;
+            font-family: 'Courier New', monospace;
+        }
+
+        button {
+            background-color: #111;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 5px 15px;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        button:hover {
+            background-color: #00ff00;
+            color: #000;
+        }
+
+        .game-output {
+            border: 1px solid #00ff00;
+            padding: 15px;
+            flex: 1;
+            margin-bottom: 15px;
+            background-color: #111;
+            white-space: pre-wrap;
+            overflow-y: auto;
+            font-size: 12px;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 10px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            background-color: #111;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #ffffff;
+        }
+
+        .status {
+            margin-top: 8px;
+            font-size: 10px;
+            color: #888;
+            text-align: center;
+        }
+
+        .loading {
+            color: #ffff00;
+        }
+
+        .error {
+            color: #ff0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="text-panel">
+            <div class="container">
+                <h1>Suspended - Enhanced 3D Edition</h1>
+                
+                <div class="game-controls">
+                    <button id="newGameBtn">Restart Game</button>
+                    <span class="game-title">Playing: Suspended (1983)</span>
+                </div>
+
+                <div class="robot-selector">
+                    <label for="robotSelect">View Robot:</label>
+                    <select id="robotSelect">
+                        <option value="iris">IRIS (Visual)</option>
+                        <option value="waldo">WALDO (Builder)</option>
+                        <option value="sensa">SENSA (Sensory)</option>
+                        <option value="auda">AUDA (Audio)</option>
+                        <option value="poet">POET (Diagnostic)</option>
+                        <option value="whiz">WHIZ (Interface)</option>
+                    </select>
+                </div>
+
+                <div id="gameOutput" class="game-output">
+                    Welcome to Suspended - Enhanced 3D Edition!
+                    
+                    Select a robot above to view their perspective in 3D. The game will begin automatically.
+                </div>
+
+                <div class="input-area">
+                    <input type="text" id="commandInput" placeholder="Enter your command here..." disabled>
+                    <button id="sendBtn" disabled>Send</button>
+                </div>
+
+                <div id="status" class="status">Ready to play</div>
+            </div>
+        </div>
+
+        <div class="graphics-panel">
+            <div id="threejs-container"></div>
+            <div class="robot-info" id="robotInfo">
+                <strong>Current Robot:</strong> IRIS<br>
+                <strong>Location:</strong> Weather Banks<br>
+                <strong>Status:</strong> Needs Repair
+            </div>
+            <div class="minimap" id="minimap">
+                <div class="minimap-header">FACILITY MAP</div>
+                <canvas class="minimap-canvas" id="minimapCanvas"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="client.js"></script>
+    <script src="suspended3d.js"></script>
+</body>
+</html>
