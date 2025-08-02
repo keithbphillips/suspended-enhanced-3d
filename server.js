@@ -1,9 +1,14 @@
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const DFrotzInterface = require('./frotz-js/dist/index');
+const RobotAIEnhancement = require('./ai-enhancement');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Initialize AI enhancement
+const aiEnhancement = new RobotAIEnhancement();
 
 app.use(express.json());
 app.use(express.static('web'));
@@ -53,13 +58,20 @@ app.post('/api/new-game', (req, res) => {
         console.warn('Could not delete save file:', err.message);
     }
     
-    frotzInterface.iteration('look', (error, output) => {
+    frotzInterface.iteration('look', async (error, output) => {
         if (error && error.error) {
             console.error('Frotz error:', error);
             return res.status(500).json({ error });
         }
         
-        res.json({ output });
+        try {
+            // Skip AI enhancement for initial game startup to preserve intro
+            const enhancedOutput = await aiEnhancement.processGameOutput('look', output, true);
+            res.json({ output: enhancedOutput });
+        } catch (aiError) {
+            console.error('AI enhancement error:', aiError);
+            res.json({ output }); // Fall back to original output
+        }
     });
 });
 
@@ -82,13 +94,19 @@ app.post('/api/command', (req, res) => {
         saveFile: config.saveFile
     });
     
-    frotzInterface.iteration(command.trim(), (error, output) => {
+    frotzInterface.iteration(command.trim(), async (error, output) => {
         if (error && error.error) {
             console.error('Frotz error:', error);
             return res.status(500).json({ error });
         }
         
-        res.json({ output });
+        try {
+            const enhancedOutput = await aiEnhancement.processGameOutput(command.trim(), output);
+            res.json({ output: enhancedOutput });
+        } catch (aiError) {
+            console.error('AI enhancement error:', aiError);
+            res.json({ output }); // Fall back to original output
+        }
     });
 });
 
