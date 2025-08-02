@@ -8,6 +8,7 @@ class ZMachineClient {
         this.status = document.getElementById('status');
         
         this.currentGame = 'suspended'; // Always Suspended
+        this.sessionId = null; // Session ID for save file isolation
         this.isGameRunning = false;
         this.currentRobot = 'iris';
         this.robotLocations = {
@@ -65,7 +66,7 @@ class ZMachineClient {
         this.setStatus('Starting Suspended...', 'loading');
         
         try {
-            const response = await fetch('/api/new-game', {
+            const response = await fetch('./api/new-game', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -82,6 +83,10 @@ class ZMachineClient {
             if (data.error) {
                 throw new Error(data.error.error || 'Unknown error occurred');
             }
+            
+            // Store the session ID for this game session
+            this.sessionId = data.sessionId;
+            console.log('New game session started with ID:', this.sessionId);
             
             // Game is already set to 'suspended'
             this.isGameRunning = true;
@@ -104,7 +109,8 @@ class ZMachineClient {
     }
 
     async sendCommand() {
-        if (!this.isGameRunning) {
+        if (!this.isGameRunning || !this.sessionId) {
+            console.error('Game not running or no session ID available');
             return;
         }
         
@@ -136,14 +142,15 @@ class ZMachineClient {
         this.setStatus('Processing command...', 'loading');
         
         try {
-            const response = await fetch('/api/command', {
+            const response = await fetch('./api/command', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ 
                     game: this.currentGame,
-                    command: command 
+                    command: command,
+                    sessionId: this.sessionId
                 })
             });
             
