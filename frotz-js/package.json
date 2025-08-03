@@ -1,0 +1,44 @@
+{
+  "name": "frotz-interfacer",
+  "version": "1.4.1",
+  "description": "Frotz interface for node",
+  "main": "index.js",
+  "engines": {
+    "node": ">=6.0"
+  },
+  "scripts": {
+    "pretest": "./scripts/pretest.sh",
+    "test": "./scripts/test.sh",
+    "posttest": "./scripts/posttest.sh",
+    "prepublish": "./scripts/pretest.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jwoos/javascript_frotz"
+  },
+  "keywords": [
+    "frotz",
+    "node"
+  ],
+  "author": "Jun Woo Shin",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/jwoos/javascript_frotz/issues"
+  },
+  "homepage": "https://github.com/jwoos/javascript_frotz#readme",
+  "dependencies": {
+    "bluebird": "^3.4.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.11.4",
+    "babel-preset-es2015": "^6.13.2",
+    "colors": "^1.1.2",
+    "coveralls": "^2.11.12",
+    "debug": "^2.2.0",
+    "eslint": "^3.2.2",
+    "istanbul": "^0.4.4",
+    "jasmine": "^2.4.1",
+    "jasmine-spec-reporter": "^2.5.0",
+    "jasmine-terminal-reporter": "^1.0.2"
+  }
+}
